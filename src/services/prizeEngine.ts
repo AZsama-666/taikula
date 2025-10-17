@@ -61,13 +61,13 @@ function pickWeighted(items: PrizeItem[], unit: number): PrizeItem {
 }
 
 function getInventory(prize_id: string): { total: number, used: number } | null {
-  const row = db.prepare("SELECT total, used FROM prize_inventory WHERE prize_id=?").get(prize_id);
+  const row = db.prepare("SELECT total, used FROM prize_inventory WHERE prize_id=?").get(prize_id) as any;
   if (!row) return null;
   return row;
 }
 
 function decInventory(prize_id: string): boolean {
-  const row = db.prepare("SELECT total, used FROM prize_inventory WHERE prize_id=?").get(prize_id);
+  const row = db.prepare("SELECT total, used FROM prize_inventory WHERE prize_id=?").get(prize_id) as any;
   if (!row) return false;
   if (row.total >= 0 && row.used >= row.total) return false;
   db.prepare("UPDATE prize_inventory SET used=used+1 WHERE prize_id=?").run(prize_id);

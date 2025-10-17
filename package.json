@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "seed": "ts-node scripts/seed.ts",
+    "dev": "node --loader ts-node/esm src/server.ts",
+    "seed": "node --loader ts-node/esm scripts/seed.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "postinstall": "npm run build"

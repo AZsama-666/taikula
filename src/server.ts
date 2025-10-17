@@ -29,7 +29,7 @@ function requireIdem(req, res, next) {
 }
 
 function idemCacheGet(key: string) {
-  const row = db.prepare("SELECT response_json FROM idempotency_log WHERE key=?").get(key);
+  const row = db.prepare("SELECT response_json FROM idempotency_log WHERE key=?").get(key) as any;
   if (!row) return null;
   try { return JSON.parse(row.response_json); } catch { return null; }
 }
@@ -41,7 +41,7 @@ function idemCacheSet(key: string, resp: any) {
 app.get("/v1/me", (req, res) => {
   const u = db.prepare("SELECT * FROM users WHERE uid=1").get();
   const w = db.prepare("SELECT coins, points FROM wallets WHERE uid=1").get();
-  const seedHash = db.prepare("SELECT server_seed_hash FROM server_seeds WHERE active=1 ORDER BY id DESC LIMIT 1").get();
+  const seedHash = db.prepare("SELECT server_seed_hash FROM server_seeds WHERE active=1 ORDER BY id DESC LIMIT 1").get() as any;
   res.json({ user: u, wallet: w, server_seed_hash: seedHash?.server_seed_hash, coin_price: getCoinPrice() });
 });
 
@@ -217,7 +217,7 @@ app.post("/v1/admin/recharge/approve", requireAdmin, (req, res) => {
   const { id, note } = req.body;
   if (!id) return res.status(400).json({ error: "MISSING_ID" });
   
-  const request = db.prepare("SELECT * FROM recharge_requests WHERE id=?").get(id);
+  const request = db.prepare("SELECT * FROM recharge_requests WHERE id=?").get(id) as any;
   if (!request) return res.status(404).json({ error: "REQUEST_NOT_FOUND" });
   if (request.status !== "PENDING") return res.status(400).json({ error: "REQUEST_ALREADY_PROCESSED" });
   
@@ -239,7 +239,7 @@ app.post("/v1/admin/recharge/reject", requireAdmin, (req, res) => {
   const { id, note } = req.body;
   if (!id) return res.status(400).json({ error: "MISSING_ID" });
   
-  const request = db.prepare("SELECT * FROM recharge_requests WHERE id=?").get(id);
+  const request = db.prepare("SELECT * FROM recharge_requests WHERE id=?").get(id) as any;
   if (!request) return res.status(404).json({ error: "REQUEST_NOT_FOUND" });
   if (request.status !== "PENDING") return res.status(400).json({ error: "REQUEST_ALREADY_PROCESSED" });
   
@@ -261,7 +261,7 @@ app.post("/v1/admin/withdrawal/approve", requireAdmin, (req, res) => {
   const { id, note } = req.body;
   if (!id) return res.status(400).json({ error: "MISSING_ID" });
   
-  const request = db.prepare("SELECT * FROM withdrawal_requests WHERE id=?").get(id);
+  const request = db.prepare("SELECT * FROM withdrawal_requests WHERE id=?").get(id) as any;
   if (!request) return res.status(404).json({ error: "REQUEST_NOT_FOUND" });
   if (request.status !== "PENDING") return res.status(400).json({ error: "REQUEST_ALREADY_PROCESSED" });
   
@@ -273,7 +273,7 @@ app.post("/v1/admin/withdrawal/reject", requireAdmin, (req, res) => {
   const { id, note } = req.body;
   if (!id) return res.status(400).json({ error: "MISSING_ID" });
   
-  const request = db.prepare("SELECT * FROM withdrawal_requests WHERE id=?").get(id);
+  const request = db.prepare("SELECT * FROM withdrawal_requests WHERE id=?").get(id) as any;
   if (!request) return res.status(404).json({ error: "REQUEST_NOT_FOUND" });
   if (request.status !== "PENDING") return res.status(400).json({ error: "REQUEST_ALREADY_PROCESSED" });
   
