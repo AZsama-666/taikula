@@ -2,15 +2,35 @@
 
 一个功能完整的抽奖系统，包含用户端游戏界面和管理员后台。
 
+[![GitHub](https://img.shields.io/badge/GitHub-taikula-blue?logo=github)](https://github.com/AZsama-666/taikula)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+## 🚀 一键部署（5分钟上线）
+
+**不需要懂代码！** 只需要点几个按钮：
+
+👉 **[查看超简单部署教程](EASY_DEPLOY.md)** 👈
+
+### 快速部署到 Railway
+1. 访问 https://railway.app
+2. 用 GitHub 登录
+3. 导入 `taikula` 仓库
+4. 等待 5 分钟
+5. 完成！🎉
+
 ## ⚠️ 重要：部署说明
 
 **❌ 不支持 Vercel** - 由于使用 SQLite，无法在 Vercel 部署
 
 **✅ 推荐平台**：
 - **Railway**（强烈推荐）：https://railway.app
-- **Render**：https://render.com
+- **Render**（备选）：https://render.com
 
-详见：[部署指南](DEPLOYMENT.md) | [故障排查](TROUBLESHOOTING.md)
+**📖 详细文档**：
+- [🎯 超简单部署教程](EASY_DEPLOY.md) - **推荐先看这个！**
+- [📚 完整部署指南](DEPLOYMENT.md)
+- [🔧 故障排查](TROUBLESHOOTING.md)
+- [📱 在线使用指南](ONLINE_USAGE.md)
 
 ---
 
