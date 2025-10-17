@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: taikula-lucky-draw
+    env: node
+    region: singapore
+    plan: free
+    buildCommand: npm install && npm run build && npm run seed
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: COIN_PRICE
+        value: 300
+      - key: SERVER_SEED
+        value: auto
+
