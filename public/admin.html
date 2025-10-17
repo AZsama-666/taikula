@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>管理后台 - 太酷啦抽奖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    .login-box {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .admin-container {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .admin-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logout-btn {
+      padding: 0.5rem 1rem;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .admin-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2rem 0;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar-item {
+      padding: 1rem 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      border-left: 4px solid transparent;
+    }
+
+    .sidebar-item:hover {
+      background: rgba(44, 62, 80, 0.1);
+    }
+
+    .sidebar-item.active {
+      background: rgba(44, 62, 80, 0.15);
+      border-left-color: #2c3e50;
+      color: #2c3e50;
+    }
+
+    .main-panel {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #2c3e50;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+      margin-bottom: 2rem;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      background: #f8f9fa;
+      font-weight: 600;
+      border-bottom: 2px solid #dee2e6;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    tr:hover {
+      background: #f8f9fa;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: all 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    .btn-success {
+      background: #27ae60;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #229954;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .btn-primary {
+      background: #3498db;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .status-PENDING {
+      background: #ffeaa7;
+      color: #d63031;
+    }
+
+    .status-APPROVED {
+      background: #55efc4;
+      color: #00b894;
+    }
+
+    .status-REJECTED {
+      background: #fab1a0;
+      color: #d63031;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #2c3e50;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #2c3e50;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 200px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录界面 -->
+  <div id="loginContainer" class="login-container">
+    <div class="login-box">
+      <div class="login-title">🔐 管理员登录</div>
+      <form onsubmit="login(event)">
+        <div class="form-group">
+          <label class="form-label">用户名</label>
+          <input type="text" class="form-input" id="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">密码</label>
+          <input type="password" class="form-input" id="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">登录</button>
+      </form>
+      <div style="margin-top: 1rem; text-align: center; font-size: 0.85rem; color: #666;">
+        默认账号: admin / admin123
+      </div>
+    </div>
+  </div>
+
+  <!-- 管理后台 -->
+  <div id="adminContainer" class="admin-container">
+    <div class="admin-header">
+      <div class="admin-logo">🎰 太酷啦抽奖 - 管理后台</div>
+      <div class="admin-user">
+        <span>👤 <span id="adminName">管理员</span></span>
+        <button class="logout-btn" onclick="logout()">退出</button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      <div class="sidebar">
+        <div class="sidebar-item active" onclick="switchPanel('dashboard')">📊 仪表板</div>
+        <div class="sidebar-item" onclick="switchPanel('users')">👥 用户管理</div>
+        <div class="sidebar-item" onclick="switchPanel('recharges')">💳 充值审核</div>
+        <div class="sidebar-item" onclick="switchPanel('withdrawals')">💸 提现管理</div>
+      </div>
+
+      <div class="main-panel">
+        <!-- 仪表板面板 -->
+        <div id="dashboardPanel" class="panel active">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">总用户数</div>
+              <div class="stat-value" id="totalUsers">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">待处理充值</div>
+              <div class="stat-value" id="pendingRecharges">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">待处理提现</div>
+              <div class="stat-value" id="pendingWithdrawals">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">流通金币总量</div>
+              <div class="stat-value" id="totalCoins">0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 用户管理面板 -->
+        <div id="usersPanel" class="panel">
+          <div class="card">
+            <div class="card-title">用户列表</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>用户ID</th>
+                  <th>昵称</th>
+                  <th>金币</th>
+                  <th>积分</th>
+                  <th>注册时间</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable">
+                <tr><td colspan="5" style="text-align: center;">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 充值审核面板 -->
+        <div id="rechargesPanel" class="panel">
+          <div class="card">
+            <div class="card-title">充值申请</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>用户</th>
+                  <th>金额</th>
+                  <th>金币</th>
+                  <th>状态</th>
+                  <th>提交时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="rechargesTable">
+                <tr><td colspan="7" style="text-align: center;">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 提现管理面板 -->
+        <div id="withdrawalsPanel" class="panel">
+          <div class="card">
+            <div class="card-title">提现申请</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>用户</th>
+                  <th>金额</th>
+                  <th>金币</th>
+                  <th>账户信息</th>
+                  <th>状态</th>
+                  <th>提交时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="withdrawalsTable">
+                <tr><td colspan="8" style="text-align: center;">加载中...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 审核模态框 -->
+  <div id="actionModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title" id="modalTitle">操作确认</div>
+      <div class="form-group">
+        <label class="form-label">备注 (可选)</label>
+        <input type="text" class="form-input" id="actionNote" placeholder="填写备注信息">
+      </div>
+      <div class="modal-buttons">
+        <button class="btn btn-primary" style="flex: 1;" onclick="closeModal()">取消</button>
+        <button class="btn" id="confirmBtn" style="flex: 2;" onclick="confirmAction()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let adminToken = null;
+    let currentAction = null;
+
+    async function login(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/v1/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          adminToken = data.token;
+          document.getElementById('adminName').textContent = data.admin.username;
+          document.getElementById('loginContainer').style.display = 'none';
+          document.getElementById('adminContainer').style.display = 'flex';
+          loadDashboard();
+        } else {
+          alert('登录失败: ' + (data.error || '未知错误'));
+        }
+      } catch (error) {
+        console.error('登录失败:', error);
+        alert('登录失败，请重试');
+      }
+    }
+
+    function logout() {
+      adminToken = null;
+      document.getElementById('loginContainer').style.display = 'flex';
+      document.getElementById('adminContainer').style.display = 'none';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    function switchPanel(panelName) {
+      document.querySelectorAll('.sidebar-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(panelName + 'Panel').classList.add('active');
+
+      if (panelName === 'dashboard') loadDashboard();
+      else if (panelName === 'users') loadUsers();
+      else if (panelName === 'recharges') loadRecharges();
+      else if (panelName === 'withdrawals') loadWithdrawals();
+    }
+
+    async function apiCall(url, options = {}) {
+      if (!adminToken) {
+        logout();
+        return null;
+      }
+
+      const headers = {
+        'Authorization': adminToken,
+        ...options.headers
+      };
+
+      const res = await fetch(url, { ...options, headers });
+      const data = await res.json();
+
+      if (res.status === 401) {
+        alert('登录已过期，请重新登录');
+        logout();
+        return null;
+      }
+
+      return data;
+    }
+
+    async function loadDashboard() {
+      const data = await apiCall('/v1/admin/dashboard');
+      if (data) {
+        document.getElementById('totalUsers').textContent = data.total_users || 0;
+        document.getElementById('pendingRecharges').textContent = data.pending_recharges || 0;
+        document.getElementById('pendingWithdrawals').textContent = data.pending_withdrawals || 0;
+        document.getElementById('totalCoins').textContent = data.total_coins || 0;
+      }
+    }
+
+    async function loadUsers() {
+      const data = await apiCall('/v1/admin/users');
+      if (data && data.users) {
+        const table = document.getElementById('usersTable');
+        if (data.users.length === 0) {
+          table.innerHTML = '<tr><td colspan="5" style="text-align: center;">暂无用户</td></tr>';
+        } else {
+          table.innerHTML = data.users.map(user => `
+            <tr>
+              <td>${user.uid}</td>
+              <td>${user.nickname || '-'}</td>
+              <td>${user.coins || 0}</td>
+              <td>${user.points || 0}</td>
+              <td>${user.created_at || '-'}</td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    async function loadRecharges() {
+      const data = await apiCall('/v1/admin/recharges');
+      if (data && data.recharges) {
+        const table = document.getElementById('rechargesTable');
+        if (data.recharges.length === 0) {
+          table.innerHTML = '<tr><td colspan="7" style="text-align: center;">暂无充值申请</td></tr>';
+        } else {
+          table.innerHTML = data.recharges.map(r => `
+            <tr>
+              <td>${r.id}</td>
+              <td>${r.nickname || 'UID:' + r.uid}</td>
+              <td>¥${(r.amount / 100).toFixed(2)}</td>
+              <td>${r.coins}</td>
+              <td><span class="status-badge status-${r.status}">${r.status}</span></td>
+              <td>${r.created_at || '-'}</td>
+              <td>
+                ${r.status === 'PENDING' ? `
+                  <button class="btn btn-success" onclick="openActionModal('recharge', 'approve', ${r.id})">通过</button>
+                  <button class="btn btn-danger" onclick="openActionModal('recharge', 'reject', ${r.id})">拒绝</button>
+                ` : '-'}
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    async function loadWithdrawals() {
+      const data = await apiCall('/v1/admin/withdrawals');
+      if (data && data.withdrawals) {
+        const table = document.getElementById('withdrawalsTable');
+        if (data.withdrawals.length === 0) {
+          table.innerHTML = '<tr><td colspan="8" style="text-align: center;">暂无提现申请</td></tr>';
+        } else {
+          table.innerHTML = data.withdrawals.map(w => `
+            <tr>
+              <td>${w.id}</td>
+              <td>${w.nickname || 'UID:' + w.uid}</td>
+              <td>¥${(w.amount / 100).toFixed(2)}</td>
+              <td>${w.coins_deducted}</td>
+              <td>${w.account_info || '-'}</td>
+              <td><span class="status-badge status-${w.status}">${w.status}</span></td>
+              <td>${w.created_at || '-'}</td>
+              <td>
+                ${w.status === 'PENDING' ? `
+                  <button class="btn btn-success" onclick="openActionModal('withdrawal', 'approve', ${w.id})">通过</button>
+                  <button class="btn btn-danger" onclick="openActionModal('withdrawal', 'reject', ${w.id})">拒绝</button>
+                ` : '-'}
+              </td>
+            </tr>
+          `).join('');
+        }
+      }
+    }
+
+    function openActionModal(type, action, id) {
+      currentAction = { type, action, id };
+      document.getElementById('modalTitle').textContent = 
+        `${action === 'approve' ? '通过' : '拒绝'}${type === 'recharge' ? '充值' : '提现'}申请 #${id}`;
+      
+      const confirmBtn = document.getElementById('confirmBtn');
+      confirmBtn.className = 'btn ' + (action === 'approve' ? 'btn-success' : 'btn-danger');
+      confirmBtn.style.flex = '2';
+      
+      document.getElementById('actionModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('actionModal').classList.remove('active');
+      document.getElementById('actionNote').value = '';
+      currentAction = null;
+    }
+
+    async function confirmAction() {
+      if (!currentAction) return;
+
+      const note = document.getElementById('actionNote').value;
+      const { type, action, id } = currentAction;
+
+      try {
+        const data = await apiCall(`/v1/admin/${type}/${action}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id, note })
+        });
+
+        if (data && data.ok) {
+          alert('操作成功');
+          closeModal();
+          loadDashboard();
+          if (type === 'recharge') loadRecharges();
+          else loadWithdrawals();
+        } else {
+          alert('操作失败: ' + (data?.error || '未知错误'));
+        }
+      } catch (error) {
+        console.error('操作失败:', error);
+        alert('操作失败，请重试');
+      }
+    }
+
+    // 点击模态框外部关闭
+    document.getElementById('actionModal').addEventListener('click', (e) => {
+      if (e.target.id === 'actionModal') closeModal();
+    });
+  </script>
+</body>
+</html>
+
+

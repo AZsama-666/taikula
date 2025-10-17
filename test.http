@@ -1,0 +1,31 @@
+// VS Code REST Client or similar
+
+### me
+GET http://localhost:3000/v1/me
+
+### wallet
+GET http://localhost:3000/v1/wallet
+
+### recharge (Idempotency-Key required)
+POST http://localhost:3000/v1/recharge/create
+Idempotency-Key: abc-recharge-001
+Content-Type: application/json
+
+{ "amount": 900 }
+
+### draw 1
+POST http://localhost:3000/v1/draw/start
+Idempotency-Key: abc-draw-001
+Content-Type: application/json
+
+{ "client_salt": "demo-1" }
+
+### draw 2
+POST http://localhost:3000/v1/draw/start
+Idempotency-Key: abc-draw-002
+Content-Type: application/json
+
+{ "client_salt": "demo-2" }
+
+### vouchers
+GET http://localhost:3000/v1/vouchers

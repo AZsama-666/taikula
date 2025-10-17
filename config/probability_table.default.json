@@ -1,0 +1,60 @@
+{
+  "table_id": "default_v1",
+  "items": [
+    {
+      "prize_id": "iphone17",
+      "tier": "S",
+      "weight": 1,
+      "inventory": 1,
+      "max_per_user": 1
+    },
+    {
+      "prize_id": "voucher_1000",
+      "tier": "A",
+      "weight": 500,
+      "inventory": 50
+    },
+    {
+      "prize_id": "voucher_500",
+      "tier": "B",
+      "weight": 1000,
+      "inventory": 200
+    },
+    {
+      "prize_id": "voucher_200",
+      "tier": "C",
+      "weight": 2000,
+      "inventory": 1000
+    },
+    {
+      "prize_id": "coin_plus_1",
+      "tier": "D",
+      "weight": 500,
+      "inventory": -1
+    },
+    {
+      "prize_id": "points_10",
+      "tier": "E",
+      "weight": 3000,
+      "inventory": -1
+    },
+    {
+      "prize_id": "cosmetic_frame1",
+      "tier": "F",
+      "weight": 4999,
+      "inventory": -1
+    }
+  ],
+  "policies": {
+    "out_of_stock": "DOWNGRADE_TO_NEXT_TIER",
+    "pity": {
+      "enable": true,
+      "threshold_to_C": 20,
+      "once_AB_guarantee": false
+    },
+    "happy_hour": {
+      "enable": true,
+      "upgrade_E_to_C_prob": 0.5
+    }
+  }
+}

@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>幸运抽奖 - 太酷啦游戏</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      color: #333;
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .wallet-info {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .wallet-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 20px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .container {
+      flex: 1;
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      width: 100%;
+    }
+
+    .main-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #667eea;
+    }
+
+    .draw-machine {
+      text-align: center;
+    }
+
+    .prize-display {
+      width: 200px;
+      height: 200px;
+      margin: 1rem auto;
+      background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+      animation: float 3s ease-in-out infinite;
+      box-shadow: 0 10px 30px rgba(252, 182, 159, 0.3);
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .draw-btn {
+      width: 100%;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    .draw-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .draw-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Space Grotesk', sans-serif;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    .info-section {
+      grid-column: 1 / -1;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #eee;
+    }
+
+    .tab {
+      padding: 0.75rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      color: #666;
+      transition: all 0.3s ease;
+      border-bottom: 3px solid transparent;
+    }
+
+    .tab.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .history-item {
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+      margin-bottom: 0.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .prize-tag {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .tier-S { background: #ffd700; color: #333; }
+    .tier-A { background: #ff69b4; color: white; }
+    .tier-B { background: #ba55d3; color: white; }
+    .tier-C { background: #4169e1; color: white; }
+    .tier-D { background: #20b2aa; color: white; }
+    .tier-E { background: #32cd32; color: white; }
+    .tier-F { background: #808080; color: white; }
+
+    .status-PENDING { color: #ffa500; }
+    .status-APPROVED { color: #32cd32; }
+    .status-REJECTED { color: #ff4444; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #667eea;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Space Grotesk', sans-serif;
+      transition: border-color 0.3s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .result-animation {
+      animation: prize-reveal 0.8s ease-out;
+    }
+
+    @keyframes prize-reveal {
+      0% { transform: scale(0) rotate(180deg); opacity: 0; }
+      50% { transform: scale(1.2) rotate(-10deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .main-section {
+        grid-template-columns: 1fr;
+      }
+      
+      .wallet-info {
+        gap: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">🎰 太酷啦抽奖</div>
+    <div class="wallet-info">
+      <div class="wallet-item">
+        💰 金币: <span id="coins">0</span>
+      </div>
+      <div class="wallet-item">
+        ⭐ 积分: <span id="points">0</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="main-section">
+      <div class="card draw-machine">
+        <div class="card-title">幸运抽奖</div>
+        <div class="prize-display" id="prizeDisplay">🎁</div>
+        <div id="prizeInfo" style="margin: 1rem 0; min-height: 2rem; font-weight: 600; color: #667eea;"></div>
+        <button class="draw-btn" id="drawBtn" onclick="startDraw()">
+          🎲 抽奖一次 (1金币)
+        </button>
+        <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+          种子哈希: <code style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;" id="seedHash">-</code>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">快捷操作</div>
+        <div class="action-buttons">
+          <button class="action-btn" onclick="openModal('recharge')">💳 充值</button>
+          <button class="action-btn" onclick="openModal('withdraw')">💸 提现</button>
+        </div>
+        <div style="margin-top: 2rem;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">奖品等级</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            <span class="prize-tag tier-S">S 级</span>
+            <span class="prize-tag tier-A">A 级</span>
+            <span class="prize-tag tier-B">B 级</span>
+            <span class="prize-tag tier-C">C 级</span>
+            <span class="prize-tag tier-D">D 级</span>
+            <span class="prize-tag tier-E">E 级</span>
+            <span class="prize-tag tier-F">F 级</span>
+          </div>
+        </div>
+        <div style="margin-top: 2rem;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">兑换比例</div>
+          <div style="font-family: 'JetBrains Mono', monospace;">1 金币 = ¥<span id="coinPrice">3</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card info-section">
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('history')">抽奖记录</button>
+        <button class="tab" onclick="switchTab('vouchers')">我的代金券</button>
+        <button class="tab" onclick="switchTab('recharges')">充值记录</button>
+        <button class="tab" onclick="switchTab('withdrawals')">提现记录</button>
+      </div>
+
+      <div id="historyTab" class="tab-content active">
+        <div id="historyList">加载中...</div>
+      </div>
+
+      <div id="vouchersTab" class="tab-content">
+        <div id="vouchersList">加载中...</div>
+      </div>
+
+      <div id="rechargesTab" class="tab-content">
+        <div id="rechargesList">加载中...</div>
+      </div>
+
+      <div id="withdrawalsTab" class="tab-content">
+        <div id="withdrawalsList">加载中...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 充值模态框 -->
+  <div id="rechargeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">充值金币</div>
+      <div class="form-group">
+        <label class="form-label">充值金额 (¥)</label>
+        <input type="number" class="form-input" id="rechargeAmount" placeholder="请输入金额" min="1">
+        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+          将获得金币: <span id="rechargeCoins" style="font-weight: 600; color: #667eea;">0</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">支付凭证 (可选)</label>
+        <input type="text" class="form-input" id="paymentProof" placeholder="支付单号或备注">
+      </div>
+      <div class="modal-buttons">
+        <button class="action-btn" style="flex: 1;" onclick="closeModal()">取消</button>
+        <button class="draw-btn" style="flex: 2; margin: 0;" onclick="submitRecharge()">提交充值</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提现模态框 -->
+  <div id="withdrawModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-title">提现申请</div>
+      <div class="form-group">
+        <label class="form-label">提现金额 (¥)</label>
+        <input type="number" class="form-input" id="withdrawAmount" placeholder="请输入金额" min="1">
+        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #666;">
+          需要金币: <span id="withdrawCoins" style="font-weight: 600; color: #667eea;">0</span> (可用: <span id="availableCoins">0</span>)
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">收款账户信息</label>
+        <input type="text" class="form-input" id="accountInfo" placeholder="支付宝/微信/银行卡信息">
+      </div>
+      <div class="modal-buttons">
+        <button class="action-btn" style="flex: 1;" onclick="closeModal()">取消</button>
+        <button class="draw-btn" style="flex: 2; margin: 0;" onclick="submitWithdraw()">提交申请</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let userData = {};
+    let coinPrice = 300;
+    let drawHistory = [];
+
+    async function fetchUserData() {
+      try {
+        const res = await fetch('/v1/me');
+        const data = await res.json();
+        userData = data;
+        
+        document.getElementById('coins').textContent = data.wallet?.coins || 0;
+        document.getElementById('points').textContent = data.wallet?.points || 0;
+        document.getElementById('seedHash').textContent = (data.server_seed_hash || '').substring(0, 16) + '...';
+        document.getElementById('availableCoins').textContent = data.wallet?.coins || 0;
+        
+        coinPrice = data.coin_price || 300;
+        document.getElementById('coinPrice').textContent = (coinPrice / 100).toFixed(2);
+      } catch (error) {
+        console.error('获取用户数据失败:', error);
+      }
+    }
+
+    async function startDraw() {
+      const btn = document.getElementById('drawBtn');
+      const display = document.getElementById('prizeDisplay');
+      const info = document.getElementById('prizeInfo');
+      
+      if (userData.wallet?.coins < 1) {
+        alert('金币不足，请先充值！');
+        return;
+      }
+
+      btn.disabled = true;
+      display.classList.add('spinning');
+      display.textContent = '🎰';
+      info.textContent = '抽奖中...';
+
+      try {
+        const res = await fetch('/v1/draw/start', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': 'draw-' + Date.now() + '-' + Math.random()
+          },
+          body: JSON.stringify({
+            client_salt: Math.random().toString(36)
+          })
+        });
+
+        const result = await res.json();
+        
+        setTimeout(() => {
+          display.classList.remove('spinning');
+          display.classList.add('result-animation');
+          
+          const prizeEmojis = {
+            'iphone17': '📱',
+            'voucher_1000': '💎',
+            'voucher_500': '💰',
+            'voucher_200': '🎟️',
+            'coin_plus_1': '🪙',
+            'points_10': '⭐',
+            'cosmetic_frame1': '🖼️'
+          };
+          
+          display.textContent = prizeEmojis[result.prize_id] || '🎁';
+          info.innerHTML = `恭喜获得 <span class="prize-tag tier-${result.tier}">${result.tier}</span> ${result.prize_id}`;
+          
+          setTimeout(() => {
+            display.classList.remove('result-animation');
+          }, 800);
+          
+          fetchUserData();
+          loadDrawHistory();
+        }, 2000);
+      } catch (error) {
+        console.error('抽奖失败:', error);
+        alert('抽奖失败，请重试');
+        display.classList.remove('spinning');
+        display.textContent = '🎁';
+        info.textContent = '';
+      } finally {
+        setTimeout(() => {
+          btn.disabled = false;
+        }, 2500);
+      }
+    }
+
+    async function loadDrawHistory() {
+      // 这里简化处理，实际应该有专门的API
+      document.getElementById('historyList').innerHTML = '<div style="text-align: center; color: #666;">暂无抽奖记录</div>';
+    }
+
+    async function loadVouchers() {
+      try {
+        const res = await fetch('/v1/vouchers');
+        const data = await res.json();
+        const list = document.getElementById('vouchersList');
+        
+        if (data.vouchers && data.vouchers.length > 0) {
+          list.innerHTML = data.vouchers.map(v => `
+            <div class="history-item">
+              <div>
+                <div style="font-weight: 600;">¥${v.face} 代金券</div>
+                <div style="font-size: 0.85rem; color: #666; font-family: 'JetBrains Mono', monospace;">代码: ${v.code}</div>
+              </div>
+              <span class="prize-tag" style="background: ${v.status === 'ACTIVE' ? '#32cd32' : '#808080'}; color: white;">${v.status}</span>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = '<div style="text-align: center; color: #666;">暂无代金券</div>';
+        }
+      } catch (error) {
+        console.error('加载代金券失败:', error);
+      }
+    }
+
+    async function loadRecharges() {
+      try {
+        const res = await fetch('/v1/recharge/history');
+        const data = await res.json();
+        const list = document.getElementById('rechargesList');
+        
+        if (data.recharges && data.recharges.length > 0) {
+          list.innerHTML = data.recharges.map(r => `
+            <div class="history-item">
+              <div>
+                <div style="font-weight: 600;">¥${r.amount / 100} → ${r.coins} 金币</div>
+                <div style="font-size: 0.85rem; color: #666;">${r.created_at}</div>
+                ${r.admin_note ? `<div style="font-size: 0.85rem; color: #666;">备注: ${r.admin_note}</div>` : ''}
+              </div>
+              <span class="status-${r.status}" style="font-weight: 600;">${r.status}</span>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = '<div style="text-align: center; color: #666;">暂无充值记录</div>';
+        }
+      } catch (error) {
+        console.error('加载充值记录失败:', error);
+      }
+    }
+
+    async function loadWithdrawals() {
+      try {
+        const res = await fetch('/v1/withdrawal/history');
+        const data = await res.json();
+        const list = document.getElementById('withdrawalsList');
+        
+        if (data.withdrawals && data.withdrawals.length > 0) {
+          list.innerHTML = data.withdrawals.map(w => `
+            <div class="history-item">
+              <div>
+                <div style="font-weight: 600;">${w.coins_deducted} 金币 → ¥${w.amount / 100}</div>
+                <div style="font-size: 0.85rem; color: #666;">${w.created_at}</div>
+                ${w.admin_note ? `<div style="font-size: 0.85rem; color: #666;">备注: ${w.admin_note}</div>` : ''}
+              </div>
+              <span class="status-${w.status}" style="font-weight: 600;">${w.status}</span>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = '<div style="text-align: center; color: #666;">暂无提现记录</div>';
+        }
+      } catch (error) {
+        console.error('加载提现记录失败:', error);
+      }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabName + 'Tab').classList.add('active');
+      
+      if (tabName === 'vouchers') loadVouchers();
+      if (tabName === 'recharges') loadRecharges();
+      if (tabName === 'withdrawals') loadWithdrawals();
+      if (tabName === 'history') loadDrawHistory();
+    }
+
+    function openModal(type) {
+      if (type === 'recharge') {
+        document.getElementById('rechargeModal').classList.add('active');
+      } else if (type === 'withdraw') {
+        document.getElementById('withdrawModal').classList.add('active');
+      }
+    }
+
+    function closeModal() {
+      document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+    }
+
+    document.getElementById('rechargeAmount').addEventListener('input', (e) => {
+      const amount = parseFloat(e.target.value) || 0;
+      const coins = Math.floor((amount * 100) / coinPrice);
+      document.getElementById('rechargeCoins').textContent = coins;
+    });
+
+    document.getElementById('withdrawAmount').addEventListener('input', (e) => {
+      const amount = parseFloat(e.target.value) || 0;
+      const coins = Math.ceil((amount * 100) / coinPrice);
+      document.getElementById('withdrawCoins').textContent = coins;
+    });
+
+    async function submitRecharge() {
+      const amount = parseFloat(document.getElementById('rechargeAmount').value);
+      if (!amount || amount <= 0) {
+        alert('请输入有效金额');
+        return;
+      }
+
+      try {
+        const res = await fetch('/v1/recharge/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': 'recharge-' + Date.now()
+          },
+          body: JSON.stringify({
+            amount: Math.floor(amount * 100)
+          })
+        });
+
+        const result = await res.json();
+        if (result.ok) {
+          alert(`充值成功！获得 ${result.coins_added} 金币`);
+          closeModal();
+          fetchUserData();
+          document.getElementById('rechargeAmount').value = '';
+        } else {
+          alert('充值失败: ' + (result.error || '未知错误'));
+        }
+      } catch (error) {
+        console.error('充值失败:', error);
+        alert('充值失败，请重试');
+      }
+    }
+
+    async function submitWithdraw() {
+      const amount = parseFloat(document.getElementById('withdrawAmount').value);
+      const accountInfo = document.getElementById('accountInfo').value;
+      
+      if (!amount || amount <= 0) {
+        alert('请输入有效金额');
+        return;
+      }
+      
+      if (!accountInfo) {
+        alert('请输入收款账户信息');
+        return;
+      }
+
+      try {
+        const res = await fetch('/v1/withdrawal/create', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Idempotency-Key': 'withdraw-' + Date.now()
+          },
+          body: JSON.stringify({
+            amount: Math.floor(amount * 100),
+            account_info: accountInfo
+          })
+        });
+
+        const result = await res.json();
+        if (result.ok) {
+          alert(`提现申请已提交！扣除 ${result.coins_deducted} 金币，等待管理员审核`);
+          closeModal();
+          fetchUserData();
+          document.getElementById('withdrawAmount').value = '';
+          document.getElementById('accountInfo').value = '';
+        } else {
+          alert('提现失败: ' + (result.error || '未知错误'));
+        }
+      } catch (error) {
+        console.error('提现失败:', error);
+        alert('提现失败，请重试');
+      }
+    }
+
+    // 点击模态框外部关闭
+    document.querySelectorAll('.modal').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    });
+
+    // 初始化
+    fetchUserData();
+    loadDrawHistory();
+  </script>
+</body>
+</html>
+
+
