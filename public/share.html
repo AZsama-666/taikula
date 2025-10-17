@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分享链接 - 太酷啦抽奖</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .title {
+      font-size: 2rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .link-box {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      word-break: break-all;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1rem;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+
+    .info {
+      background: #e8f4fd;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-top: 1rem;
+    }
+
+    .info-title {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #667eea;
+    }
+
+    .info-item {
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .qr-container {
+      text-align: center;
+      margin: 2rem 0;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    #qrcode {
+      display: inline-block;
+      padding: 1rem;
+      background: white;
+      border-radius: 10px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #27ae60;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: none;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateX(-50%) translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">🎰 分享游戏</div>
+    <div class="subtitle">邀请好友一起玩！</div>
+
+    <div class="link-box" id="gameLink">加载中...</div>
+    
+    <button class="btn" onclick="copyLink()">📋 复制游戏链接</button>
+    <button class="btn btn-secondary" onclick="copyAdminLink()">🔐 复制管理员链接</button>
+
+    <div class="qr-container">
+      <div style="font-weight: 600; margin-bottom: 1rem;">扫码访问</div>
+      <div id="qrcode"></div>
+    </div>
+
+    <div class="info">
+      <div class="info-title">📌 使用说明</div>
+      <div class="info-item">🎮 游戏链接：给玩家分享，可以玩游戏</div>
+      <div class="info-item">👑 管理员链接：用于管理后台，给用户充值</div>
+      <div class="info-item">📱 支持手机、平板、电脑访问</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script>
+    const baseUrl = window.location.origin;
+    const gameUrl = baseUrl + '/';
+    const adminUrl = baseUrl + '/admin';
+
+    document.getElementById('gameLink').textContent = gameUrl;
+
+    // 生成二维码
+    new QRCode(document.getElementById('qrcode'), {
+      text: gameUrl,
+      width: 200,
+      height: 200,
+      colorDark: '#667eea',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    function copyLink() {
+      copyToClipboard(gameUrl, '游戏链接已复制！');
+    }
+
+    function copyAdminLink() {
+      copyToClipboard(adminUrl, '管理员链接已复制！');
+    }
+
+    function copyToClipboard(text, message) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast(message);
+        }).catch(() => {
+          fallbackCopy(text, message);
+        });
+      } else {
+        fallbackCopy(text, message);
+      }
+    }
+
+    function fallbackCopy(text, message) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = 0;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(message);
+      } catch (err) {
+        showToast('复制失败，请手动复制');
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
+

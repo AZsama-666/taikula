@@ -303,6 +303,10 @@ app.get("/admin", (req, res) => {
   res.sendFile(path.join(process.cwd(), "public", "admin.html"));
 });
 
+app.get("/share", (req, res) => {
+  res.sendFile(path.join(process.cwd(), "public", "share.html"));
+});
+
 const port = Number(process.env.PORT || 3000);
 app.listen(port, () => {
   console.log("Lucky Draw server listening on http://localhost:"+port);
